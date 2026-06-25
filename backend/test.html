@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        const socket = io("http://localhost:8080");
+
+        socket.on("connect", () => {
+            console.log("Connected!", socket.id);
+
+            socket.emit(
+                "join-queue",
+                "6a345f95ef80a715b39b69d8"
+            );
+        });
+
+        socket.on("customer-called", (data) => {
+            console.log("Customer Called:", data);
+        });
+    </script>
+</body>
+
+</html>
