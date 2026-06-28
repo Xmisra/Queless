@@ -28,6 +28,13 @@ const JoinQueue = () => {
       const response = await api.post(`/queueJoin/${queueId}/join`, formData);
       const token = response.data.tokenNumber;
 
+      localStorage.setItem(
+        `queue-${queueId}`,
+        JSON.stringify({
+          tokenNumber: token,
+        })
+      );
+
       setTokenNumber(token);
 
       await fetchPosition(token);
@@ -47,33 +54,73 @@ const JoinQueue = () => {
       );
 
       setCustomerStatus(response.data);
-    }
-    catch (err) {
-      toast.error(err.response?.data?.error || "Could not load queue status");
+    } catch (err) {
+      localStorage.removeItem(`queue-${queueId}`);
+
+      setTokenNumber(null);
+      setCustomerStatus(null);
+
+      toast.error(
+        err.response?.data?.error || "Could not load queue status"
+      );
     }
   }
+  useEffect(() => {
+    try {
+      const savedQueue = localStorage.getItem(`queue-${queueId}`);
+
+      if (!savedQueue) return;
+
+      const { tokenNumber } = JSON.parse(savedQueue);
+
+      setTokenNumber(tokenNumber);
+      fetchPosition(tokenNumber);
+
+      socket.emit("join-queue", queueId);
+    } catch {
+      localStorage.removeItem(`queue-${queueId}`);
+    }
+  }, [queueId]);
 
   useEffect(() => {
     if (!tokenNumber) return;
 
-    socket.on("customer-called", () => {
-      fetchPosition(tokenNumber);
-    });
+    const refreshStatus = async () => {
+      await fetchPosition(tokenNumber);
+    };
 
-    socket.on("customer-completed", () => {
-      fetchPosition(tokenNumber);
-    });
+    const handleCompleted = async () => {
+      await fetchPosition(tokenNumber);
 
-    socket.on("customer-skipped", () => {
-      fetchPosition(tokenNumber);
-    });
+      localStorage.removeItem(`queue-${queueId}`);
+
+      setTimeout(() => {
+        setTokenNumber(null);
+        setCustomerStatus(null);
+      }, 4000);
+    };
+
+    const handleSkipped = async () => {
+      await fetchPosition(tokenNumber);
+
+      localStorage.removeItem(`queue-${queueId}`);
+
+      setTimeout(() => {
+        setTokenNumber(null);
+        setCustomerStatus(null);
+      }, 4000);
+    };
+
+    socket.on("customer-called", refreshStatus);
+    socket.on("customer-completed", handleCompleted);
+    socket.on("customer-skipped", handleSkipped);
 
     return () => {
-      socket.off("customer-called");
-      socket.off("customer-completed");
-      socket.off("customer-skipped");
+      socket.off("customer-called", refreshStatus);
+      socket.off("customer-completed", handleCompleted);
+      socket.off("customer-skipped", handleSkipped);
     };
-  }, [tokenNumber]);
+  }, [tokenNumber, queueId]);
 
   function renderCustomerStatus() {
     if (!customerStatus) {
