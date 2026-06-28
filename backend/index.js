@@ -20,6 +20,14 @@ const server = createServer(app);
 //extablish mongo db connction 
 databaseConnection(URI);
 
+app.get("/", (req, res) => {
+    res.send("FlowQ backend is running");
+});
+
+app.get("/health", (req, res) => {
+    res.json({ status: "ok" });
+});
+
 //plugins
 app.use(express.json());
 app.use(express.urlencoded({
