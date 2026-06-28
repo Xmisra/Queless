@@ -11,7 +11,7 @@ import queueEntryRouter from "./src/routes/QueueEntry.routes.js";
 import path from "path";
 
 dotenv.config();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8080;
 const URI = process.env.MONGO_URI;
 
 const app = express();
@@ -30,15 +30,15 @@ app.use(cookieParser());
 
 app.use(
     cors({
-        origin: "http://localhost:5173",
+        origin: process.env.CLIENT_URL || "http://localhost:5173",
         credentials: true
     })
 );
 
 //routes
 app.use("/admin", router);
-app.use("/queue",queueRouter);
-app.use("/queueJoin",queueEntryRouter);
+app.use("/queue", queueRouter);
+app.use("/queueJoin", queueEntryRouter);
 
 initSocket(server);
 
