@@ -14,6 +14,7 @@ const Login = () => {
     const { checkAuth } = useContext(AuthContext);
     const navigate = useNavigate();
     const [isSigningIn, setIsSigningIn] = useState(false);
+    const [isDemoLoading, setIsDemoLoading] = useState(false);
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -23,13 +24,34 @@ const Login = () => {
             [name]: value
         });
     }
+    async function handleDemoLogin() {
+        if (isDemoLoading) return;
 
+        setIsDemoLoading(true);
+
+        try {
+            await api.post("/admin/login", {
+                email: "demo@flowq.com",
+                password: "flowq123",
+            });
+
+            await checkAuth();
+
+            toast.success("Logged in as Demo");
+
+            navigate("/dashboard");
+        } catch (err) {
+            toast.error(err.response?.data?.error || "Demo login failed");
+        } finally {
+            setIsDemoLoading(false);
+        }
+    }
     async function handleSubmit(e) {
         e.preventDefault();
         if (isSigningIn) return;
 
         setIsSigningIn(true);
-        try{
+        try {
             await api.post(
                 "/admin/login",
                 formData
@@ -39,16 +61,15 @@ const Login = () => {
             await checkAuth();
 
             navigate("/dashboard");
-            
+
         }
-        catch(err)
-        {
+        catch (err) {
             toast.error(err.response?.data?.error || "Login failed");
         }
         finally {
             setIsSigningIn(false);
         }
-        
+
     }
 
     return (
@@ -101,6 +122,26 @@ const Login = () => {
                         className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
                     >
                         {isSigningIn ? "Signing In..." : "Login"}
+                    </button>
+                    <div className="relative py-2">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-slate-200"></div>
+                        </div>
+
+                        <div className="relative flex justify-center">
+                            <span className="bg-white px-3 text-xs uppercase tracking-wide text-slate-400">
+                                OR
+                            </span>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handleDemoLogin}
+                        disabled={isDemoLoading}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                        {isDemoLoading ? "Signing In..." : "✨ Explore Demo"}
                     </button>
 
                     <p className="text-center text-sm text-slate-500">
