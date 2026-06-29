@@ -42,12 +42,20 @@ const LandingPage = () => {
             </div>
             <span className="text-base font-semibold">FlowQ</span>
           </div>
-          <Link
-            to="/login"
-            className="rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15 focus:outline-none focus:ring-4 focus:ring-white/20"
-          >
-            Admin Login
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/login"
+              className="rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15 focus:outline-none focus:ring-4 focus:ring-white/20"
+            >
+              Login
+            </Link>
+            <Link
+              to="/signup"
+              className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-400/30"
+            >
+              Sign Up
+            </Link>
+          </div>
         </header>
 
         <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pb-16 pt-10 sm:px-6 sm:pb-20 lg:grid-cols-[1fr_0.9fr] lg:px-8 lg:pb-24 lg:pt-16">
@@ -66,7 +74,13 @@ const LandingPage = () => {
                 to="/login"
                 className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-400/30"
               >
-                Admin Login
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15 focus:outline-none focus:ring-4 focus:ring-white/20"
+              >
+                Sign Up
               </Link>
               <a
                 href="#how-it-works"

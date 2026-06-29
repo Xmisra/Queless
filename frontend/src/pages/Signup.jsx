@@ -1,19 +1,17 @@
 import { useState } from 'react';
 import api from '../api/axios';
-import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { AuthContext } from "../context/AuthContext";
 
-const Login = () => {
+const Signup = () => {
     const [formData, setFormData] = useState({
+        name: "",
         email: "",
         password: "",
     });
 
-    const { checkAuth } = useContext(AuthContext);
     const navigate = useNavigate();
-    const [isSigningIn, setIsSigningIn] = useState(false);
+    const [isSigningUp, setIsSigningUp] = useState(false);
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -26,29 +24,26 @@ const Login = () => {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        if (isSigningIn) return;
+        if (isSigningUp) return;
 
-        setIsSigningIn(true);
-        try{
+        setIsSigningUp(true);
+        try {
             await api.post(
-                "/admin/login",
+                "/admin/signup",
                 formData
             );
-            toast.success("Logged in");
+            toast.success("Account created");
 
-            await checkAuth();
+            navigate("/login");
 
-            navigate("/dashboard");
-            
         }
-        catch(err)
-        {
-            toast.error(err.response?.data?.error || "Login failed");
+        catch (err) {
+            toast.error(err.response?.data?.error || "Signup failed");
         }
         finally {
-            setIsSigningIn(false);
+            setIsSigningUp(false);
         }
-        
+
     }
 
     return (
@@ -58,11 +53,27 @@ const Login = () => {
                     <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-sm font-bold text-white shadow-sm">
                         FQ
                     </div>
-                    <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Welcome to FlowQ</h1>
-                    <p className="mt-2 text-sm text-slate-500">Sign in to manage your queues.</p>
+                    <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Create your FlowQ account</h1>
+                    <p className="mt-2 text-sm text-slate-500">Sign up to start managing your queues.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
+                    <div>
+                        <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-700">
+                            Name
+                        </label>
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            disabled={isSigningUp}
+                            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                            placeholder="Your name"
+                        />
+                    </div>
+
                     <div>
                         <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
                             Email
@@ -73,7 +84,7 @@ const Login = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            disabled={isSigningIn}
+                            disabled={isSigningUp}
                             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                             placeholder="admin@flowq.app"
                         />
@@ -89,7 +100,7 @@ const Login = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            disabled={isSigningIn}
+                            disabled={isSigningUp}
                             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                             placeholder="Enter your password"
                         />
@@ -97,16 +108,16 @@ const Login = () => {
 
                     <button
                         type="submit"
-                        disabled={isSigningIn}
+                        disabled={isSigningUp}
                         className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
                     >
-                        {isSigningIn ? "Signing In..." : "Login"}
+                        {isSigningUp ? "Creating Account..." : "Sign Up"}
                     </button>
 
                     <p className="text-center text-sm text-slate-500">
-                        Don't have an account?{" "}
-                        <Link to="/signup" className="font-semibold text-blue-600 transition hover:text-blue-700">
-                            Sign Up
+                        Already have an account?{" "}
+                        <Link to="/login" className="font-semibold text-blue-600 transition hover:text-blue-700">
+                            Login
                         </Link>
                     </p>
                 </form>
@@ -115,4 +126,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Signup;
