@@ -44,6 +44,12 @@ const LandingPage = () => {
           </div>
           <div className="flex items-center gap-3">
             <Link
+              to="/login?demo=true"
+              className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm shadow-emerald-500/20 transition hover:bg-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-300/30"
+            >
+              Try Demo
+            </Link>
+            <Link
               to="/login"
               className="rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15 focus:outline-none focus:ring-4 focus:ring-white/20"
             >
@@ -70,6 +76,12 @@ const LandingPage = () => {
               FlowQ helps teams create digital queues, share QR join links, call customers in order, and keep everyone updated in real time.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                to="/login?demo=true"
+                className="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-sm shadow-emerald-500/20 transition hover:bg-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-300/30"
+              >
+                🚀 Try Demo
+              </Link>
               <Link
                 to="/login"
                 className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-400/30"

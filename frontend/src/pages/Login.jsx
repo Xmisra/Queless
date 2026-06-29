@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import api from '../api/axios';
 import { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { AuthContext } from "../context/AuthContext";
 
@@ -13,8 +13,11 @@ const Login = () => {
 
     const { checkAuth } = useContext(AuthContext);
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [isSigningIn, setIsSigningIn] = useState(false);
     const [isDemoLoading, setIsDemoLoading] = useState(false);
+    const hasAutoDemoLoginRun = useRef(false);
+    const isAuthenticating = isSigningIn || isDemoLoading;
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -24,8 +27,8 @@ const Login = () => {
             [name]: value
         });
     }
-    async function handleDemoLogin() {
-        if (isDemoLoading) return;
+    const handleDemoLogin = useCallback(async () => {
+        if (isAuthenticating) return;
 
         setIsDemoLoading(true);
 
@@ -45,10 +48,19 @@ const Login = () => {
         } finally {
             setIsDemoLoading(false);
         }
-    }
+    }, [checkAuth, isAuthenticating, navigate]);
+
+    useEffect(() => {
+        if (searchParams.get("demo") !== "true" || hasAutoDemoLoginRun.current) return;
+
+        hasAutoDemoLoginRun.current = true;
+        setSearchParams({}, { replace: true });
+        handleDemoLogin();
+    }, [handleDemoLogin, searchParams, setSearchParams]);
+
     async function handleSubmit(e) {
         e.preventDefault();
-        if (isSigningIn) return;
+        if (isAuthenticating) return;
 
         setIsSigningIn(true);
         try {
@@ -94,7 +106,7 @@ const Login = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            disabled={isSigningIn}
+                            disabled={isAuthenticating}
                             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                             placeholder="admin@flowq.app"
                         />
@@ -110,7 +122,7 @@ const Login = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            disabled={isSigningIn}
+                            disabled={isAuthenticating}
                             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                             placeholder="Enter your password"
                         />
@@ -118,10 +130,10 @@ const Login = () => {
 
                     <button
                         type="submit"
-                        disabled={isSigningIn}
+                        disabled={isAuthenticating}
                         className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
                     >
-                        {isSigningIn ? "Signing In..." : "Login"}
+                        {isAuthenticating ? "Signing In..." : "Login"}
                     </button>
                     <div className="relative py-2">
                         <div className="absolute inset-0 flex items-center">
@@ -138,10 +150,10 @@ const Login = () => {
                     <button
                         type="button"
                         onClick={handleDemoLogin}
-                        disabled={isDemoLoading}
+                        disabled={isAuthenticating}
                         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        {isDemoLoading ? "Signing In..." : "✨ Explore Demo"}
+                        {isDemoLoading ? "Signing In..." : "Explore Demo"}
                     </button>
 
                     <p className="text-center text-sm text-slate-500">
