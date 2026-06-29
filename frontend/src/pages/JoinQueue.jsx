@@ -111,7 +111,10 @@ const JoinQueue = () => {
       }, 4000);
     };
 
-    socket.on("customer-called", refreshStatus);
+    socket.on("customer-called", (data) => {
+      console.log("CUSTOMER CALLED EVENT RECEIVED", data);
+      refreshStatus();
+    });
     socket.on("customer-completed", handleCompleted);
     socket.on("customer-skipped", handleSkipped);
 
