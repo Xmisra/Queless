@@ -162,10 +162,6 @@ async function handleCallNext(req, res) {
 
         const room = io.sockets.adapter.rooms.get(queueId);
 
-        console.log("==========");
-        console.log("Queue:", queueId);
-        console.log("Clients in room:", room ? room.size : 0);
-        console.log("==========");
 
         io.to(queueId).emit("customer-called", {
             queueId,
